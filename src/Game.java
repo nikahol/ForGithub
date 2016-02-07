@@ -18,23 +18,23 @@ public class Game {
 
     private Map<String, Territory> territories;     //Map of all Territories without continent information
     private Map<String, Territory> unclaimedLand;   //Map of unclaimed territories, for setup phase
-    private Map<String, Territory> Player;          //Map of PLaer Territories
+    private Map<String, Territory> Player;          //Map of Player Territories
     private Map<String, Territory> AI;              //Map of AI territories
 
     private LinkedList<Continent> continents;       //List of all continents
 
-    private MapWindow currentWindow;
+    private MapWindow currentWindow;                //MapWindow in which this game takes place
 
     private Territory lastClicked;
     private Territory movingTarget;
     private Territory retreatTarget;
 
-    private int phase;                              //0: claim, 1: reinforcements, 2: attack, 3: move
-    private int bonustroops;
+    private int phase;                              //0: claim, 1: reinforcements, 2: attack, 3: move, 4: AI turn
+    private int bonustroops;                        //reinforces calculated at beginning of turn
 
 
 
-    //Constructor
+    //Constructor, sets up all maps, and assigns a MapWindow
     public Game(MapParser map, MapWindow window){
         territories = map.getTerritories();
         unclaimedLand = new TreeMap<>(territories);
@@ -51,7 +51,7 @@ public class Game {
 
     public void clickEvent(Territory selected, MouseEvent me){
         switch(phase){
-            case 0: //beginning phase, Players acquire their territories. Only gets called when no
+            case 0: //beginning phase, Player and AI acquire their territories.
                 acquireTerritories(selected);
                 break;
             case 1: //place reinforcements
@@ -68,7 +68,6 @@ public class Game {
                 break;
             case 5:
                 retreat(selected, me);
-            //TODO: all the game phases
         }
 
         switch (GameOver()){
@@ -97,6 +96,7 @@ public class Game {
         }
     }
 
+    //reinforcing phase, places 1 territory on the clicked territory.
     private void placeReinforcements(Territory selected){
         if(Player.containsValue(selected)){
             selected.addTroops(1);
@@ -110,9 +110,12 @@ public class Game {
         }
     }
 
+    //attacking phase, select a territory by clicking, then click another to attack.
+    //if the second clicked territory is friendly, switch to moveTroops()
     private void attackNeighbors(Territory selected){
         if(lastClicked != null && !selected.equals(lastClicked)){
             if(lastClicked.Army() > 1) {
+                // actions are only possible with more than one army in a territory
                 if (Player.containsValue(selected ) && lastClicked.getNeighbors().containsValue(selected)) {
                     phase = 3;
                     movingTarget = selected;
@@ -147,6 +150,7 @@ public class Game {
                 currentWindow.updateMap("Land Not a Neighbor");
             }
         }
+        //first click in the window
         else if(Player.containsValue(selected)){
             if(selected.Army() == 1) {
                 currentWindow.updateMap("You can't attack or move with this territory");
@@ -158,6 +162,7 @@ public class Game {
         checkIfTurnOver();
     }
 
+    //checks if there are any moves for the player left to do.
     public void checkIfTurnOver(){
         boolean turnOver = true;
         for(Map.Entry<String,Territory> territories: Player.entrySet()){
@@ -170,7 +175,9 @@ public class Game {
 
     }
 
-    //TODO
+    //moving phase, right click to add armies to clicked territory,
+    //left click to send armies back to the other territory.
+    //if any other territory is clicked, it move to the next phase (AI turn)
     private void moveTroops(Territory selected, MouseEvent me){
         System.out.println(selected);
         if(selected.equals(movingTarget)){
@@ -193,6 +200,8 @@ public class Game {
         }
 
     }
+
+    //same actions as moveTroops, but after conquering a territory.
     public void retreat(Territory selected, MouseEvent me){
         System.out.println(selected);
         System.out.println(lastClicked);
@@ -217,6 +226,7 @@ public class Game {
 
     }
 
+    //rolls dices for attacking and handles territory ownership in case of defeat
     private int attack(Territory opponent, Territory friendly){
         int opTroops = (opponent.Army() >= 2? 2: 1);
         int friendlyTroops = (friendly.Army() >= 4 ? 3: friendly.Army()-1);
@@ -247,7 +257,8 @@ public class Game {
 
     }
 
-
+    //calculates the amount of reinforces at the beginning of a turn.
+    //reinforces = [number of territories] / 3 + [bonustroops if a whole continent is owned]
     private int calculateReinforcements(Map<String, Territory> territories, LinkedList<Continent> continents, int player){
         int terrbonus = territories.size()/3;
 
@@ -274,6 +285,7 @@ public class Game {
             currentWindow.updateMap("Player " + player + " aquired" + selected.getName());
     }
 
+    //returns a random territory for AI turns.
     public Territory getRandomTerritory(Map<String, Territory> territories){
 
         int size = territories.size();
@@ -284,6 +296,8 @@ public class Game {
 
     }
 
+    //checks if the game is over by checking who has how many territories
+    //returns 0 if both parties own territories, 1 if the player owns all territories, 2 if AI has all territories
     public int GameOver(){
 
         if(Player.size() == territories.size()) return 1;
@@ -292,10 +306,9 @@ public class Game {
         return 0;
     }
 
-    //TODO
+    //Handles AI moves.
     private void moveAI(){
         System.out.println("AI TURN STARTED");
-        //TODO: DO STUFF
 
         int reinforcements = calculateReinforcements(AI, continents, 2);
 
@@ -328,6 +341,7 @@ public class Game {
         System.out.println("AI TURN END");
 
     }
+
 
     private Territory getMaxTroops(Map<String, Territory> territories){
         int maxTroops = 0;

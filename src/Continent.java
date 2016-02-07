@@ -19,13 +19,15 @@ public class Continent {
         this.bonusTroops = troops;
         this.countries = new LinkedList<>();
     }
+
+    //adds a territory to this continent
     public void addCountry(Territory toAdd){
         countries.add(toAdd);
     }
 
     //checks if all Territories belong to the same player
     //if yes, returns amount of bonus troops specified in constructor
-    //if no, returns 0;
+    //if no, returns 0.
     public int getBonusTroops(int player){
         for(Territory country: countries){
             if(country.getOwner() != player) return 0;
@@ -34,6 +36,7 @@ public class Continent {
     }
 
     @Override
+    //just for hoots
     public String toString(){
         String temp = this.name + ": \n";
         for(Territory terr: countries){

@@ -12,9 +12,7 @@
  */
 
 import java.awt.*;
-import java.io.File;
 import java.io.InputStream;
-import java.net.URL;
 import javax.swing.*;
 
 public class AllThoseTerritories extends JFrame{

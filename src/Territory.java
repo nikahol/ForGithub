@@ -17,7 +17,6 @@ public class Territory {
 
     //Color constants for player, AI, and selected countries
     private static final Color[] PLAYERCOLORS = {Color.gray, Color.green, Color.red};
-    private static final Color ACTIVE = Color.yellow;
 
     //TODO: if any variables are added, add them to equals() as well
     private String name;                            //Name of Territory
@@ -27,8 +26,7 @@ public class Territory {
     private int capX;                               //X coordinate of capital of Territory, where to display Troops
     private int capY;                               //Y coordinate of capital of Territory, where to display Troops
     private int troops;                             //Amount of troops currently in this Territory
-    private boolean active;                         //is this Territory currently active?
-    private Color currentColor;                     //current color for drawing in Panel
+    private Color currentColor;                     //current color for drawing in MapWindow
 
     //Constructor requires name of Territory
     //everything else is set with functions
@@ -37,21 +35,8 @@ public class Territory {
         fields = new LinkedList<Field>();
         neighbors = new TreeMap<String, Territory>();
         troops = 0;
-        active = false;
         currentColor = Color.gray;
         belongsTo = 0;
-    }
-
-    public void toggleActive(){
-        active = !active;
-        if(active) this.currentColor = ACTIVE;
-        else {
-            currentColor = PLAYERCOLORS[belongsTo];
-        }
-    }
-
-    public boolean isActive(){
-        return active;
     }
 
     //welcomes reinforcements
@@ -125,7 +110,7 @@ public class Territory {
     }
 
     @Override
-    //basically compares every public variable form the two objects
+    //basically compares every public variable from the two objects
     public boolean equals(Object other) {
         if (this == other) {
             return true;
@@ -147,6 +132,7 @@ public class Territory {
         return true;
     }
 
+    //checks if all neighboring territories are friendly.
     public boolean existsOpponent(){
         for(Map.Entry<String, Territory> Entry: neighbors.entrySet()){
             if(Entry.getValue().getOwner() != belongsTo) return true;
@@ -154,6 +140,7 @@ public class Territory {
         return false;
     }
 
+    //returns color for drawing
     public Color color(){
         return currentColor;
     }

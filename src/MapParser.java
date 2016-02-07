@@ -75,9 +75,7 @@ public class MapParser{
                 System.out.println("Invalid Line: \"" + currentline + "\"");
                 System.exit(1);
             }
-            //if(!uinput.hasNext()) isnotnull = false;
             isnotnull = uinput.hasNext();
-
         }
 
     }

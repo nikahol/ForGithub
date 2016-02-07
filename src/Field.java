@@ -10,7 +10,7 @@ import java.awt.*;
  */
 public class Field{
 
-    private Territory belongsTo;       //Name of Territory this field belongs to
+    private Territory belongsTo;    //Name of Territory this field belongs to
     private Polygon p;              //outline of field
 
     //public constructor

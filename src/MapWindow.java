@@ -43,9 +43,9 @@ public class MapWindow extends JPanel implements MouseListener, MouseMotionListe
             LinkedList<Field> temp = terr.getValue().getFields();
             for( Field tempField : temp ){
                 g.setColor(Color.black);
-                g.drawPolygon(tempField.getBorder());                                           //Draws outer edge
+                g.drawPolygon(tempField.getBorder());             //Draws outer edge
                 g.setColor(current.color());
-                g.fillPolygon(tempField.getBorder());                                           //Fills the polygon
+                g.fillPolygon(tempField.getBorder());             //Fills the polygon
             }
             g.setColor(Color.black);
             g.drawString(Integer.toString(terr.getValue().Army()),terr.getValue().getCapitalX(), terr.getValue().getCapitalY()); //Display troops in capital
@@ -57,6 +57,7 @@ public class MapWindow extends JPanel implements MouseListener, MouseMotionListe
 
     }
 
+    //paints lines between territories
     public void paintLines(Graphics2D g){
         for(Map.Entry<String,Territory> terr : TerrMap.entrySet()) {
             Territory current = terr.getValue();
